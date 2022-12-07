@@ -9,7 +9,10 @@ def create_enemy():
 	enemySize = (20, 20)	
 	enemy = pygame.Surface(enemySize)
 	enemy.fill(RED)
-	enemyRectangle = pygame.Rect(width, random.randint(0, height), *enemySize)
+	enemyInitialPos = {"x": 0, "y": 0}
+	enemyInitialPos["x"] = width
+	enemyInitialPos["y"] = random.randint(0, height-enemySize[1])
+	enemyRectangle = pygame.Rect(enemyInitialPos["x"], enemyInitialPos["y"], *enemySize)
 	enemyDeltaPos = {"x": random.randint(2, 5), "y": 0}
 
 	# Let's return dictionary, because we can see what kind of object there by keys
@@ -17,10 +20,13 @@ def create_enemy():
 
 def create_bonus():
 	
-	bonusSize = (20, 20)	
+	bonusSize = (20, 20)
 	bonus = pygame.Surface(bonusSize)
 	bonus.fill(GREEN)
-	bonusRectangle = pygame.Rect(random.randint(0, width), 0, *bonusSize)
+	bonusInitialPos = {"x": 0, "y": 0}
+	bonusInitialPos["x"] = random.randint(0, width-bonusSize[0])
+	bonusInitialPos["y"] = 0
+	bonusRectangle = pygame.Rect(bonusInitialPos["x"], bonusInitialPos["y"], *bonusSize)
 	bonusDeltaPos = {"x": 0, "y":  random.randint(4, 7)}
 
 	# Let's return dictionary, because we can see what kind of object there by keys
@@ -65,7 +71,7 @@ if __name__ == "__main__":
 	pygame.time.set_timer(CREATE_ENEMY, 1500)
 	enemies = []
 
-	CREATE_BONUS = pygame.USEREVENT + 1
+	CREATE_BONUS = pygame.USEREVENT + 2
 	pygame.time.set_timer(CREATE_BONUS, 2500)
 	bonuses = []
 	
