@@ -107,6 +107,9 @@ if __name__ == "__main__":
 			if enemy["enemyRectangle"].right < 0:
 				enemies.pop(enemies.index(enemy))
 
+			if ballRectangle.colliderect(enemy["enemyRectangle"]):
+				enemies.pop(enemies.index(enemy))
+
 		# Show every drawing to screen
 		pygame.display.flip()
   
