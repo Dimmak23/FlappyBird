@@ -32,6 +32,7 @@ if __name__ == "__main__":
     #  Clean this pygame message
     os.system("CLS")
 
+    # Initialize pygame
     pygame.init()
 
     # Screen properties
@@ -39,6 +40,7 @@ if __name__ == "__main__":
     # Frame rate
     FPS = pygame.time.Clock()
 
+    # Colors
     BLACK = (0, 0, 0)
 
     WHITE = (255, 255, 255)
@@ -53,26 +55,35 @@ if __name__ == "__main__":
     RANDOM_COLORS = [
         WHITE, RED, ORANGE, YELLOW, GREEN, BLUE, SLATEBLUE, ROSYBROWN
     ]
+    
+    # Score label
+    font = pygame.font.SysFont('Gelvetica', 20)
+    scorePos = {"x": width - 120, "y": 10}
 
+    # Main Window
     mainWindow = pygame.display.set_mode(screen)
     mainWindow.fill((155, 155, 155))
 
-    ballSize = (20, 20)
-    ball = pygame.Surface(ballSize)
-    ball.fill(WHITE)
-    ballRectangle = ball.get_rect()
-    ballRectangle = ballRectangle.move((0, 0))
-    ballDeltaPos = {"x": 5, "y": 5}
-
+    # Player
     score: int = 0
+    # playerSize = (20, 20)
+    # player = pygame.Surface(playerSize)
+    # player.fill(WHITE)
+    # optimize image convertion
+    #! TODO: study methods convert() and convert_alpha()
+    player = pygame.image.load('../assets/player.png').convert_alpha()
+    playerRectangle = player.get_rect()
+    playerRectangle = playerRectangle.move((width/2-playerRectangle.width/2, height/2-playerRectangle.height/2))
+    playerDeltaPos = {"x": 5, "y": 5}
 
-
+    # Enemy event
     CREATE_ENEMY = pygame.USEREVENT + 1
     pygame.time.set_timer(CREATE_ENEMY, 1500)
     enemies = []
     enemiesSizes = {"width": 20, "height": 20}
     enemyMoveRange = (2, 5)
 
+    # Bonus event
     CREATE_BONUS = pygame.USEREVENT + 2
     pygame.time.set_timer(CREATE_BONUS, 2500)
     bonuses = []
@@ -97,10 +108,14 @@ if __name__ == "__main__":
                 bonuses.append(
                     create_objective(enemy=False, color=GREEN, size=bonusesSizes, moveRange=bonusMoveRange))
 
+        # RENDERING
+
         # Redraw main window to black every iteration
         mainWindow.fill(BLACK)
-        # Redraw ball on top of the main window
-        mainWindow.blit(ball, ballRectangle)
+        # Redraw player on top of the main window
+        mainWindow.blit(player, playerRectangle)
+        # Render score label
+        mainWindow.blit(font.render(f"Player score: {score}", True, WHITE), (scorePos["x"], scorePos["y"]))
         # Redraw enemy on top of the previous
         for enemy in enemies:
             mainWindow.blit(enemy["surface"], enemy["rectangle"])
@@ -110,14 +125,14 @@ if __name__ == "__main__":
 
         # User controls
         pressedKeys = pygame.key.get_pressed()
-        if pressedKeys[K_DOWN] and ballRectangle.bottom < height:
-            ballRectangle = ballRectangle.move([0, ballDeltaPos["y"]])
-        if pressedKeys[K_UP] and ballRectangle.top > 0:
-            ballRectangle = ballRectangle.move([0, -ballDeltaPos["y"]])
-        if pressedKeys[K_LEFT] and ballRectangle.left > 0:
-            ballRectangle = ballRectangle.move([-ballDeltaPos["x"], 0])
-        if pressedKeys[K_RIGHT] and ballRectangle.right < width:
-            ballRectangle = ballRectangle.move([ballDeltaPos["x"], 0])
+        if pressedKeys[K_DOWN] and playerRectangle.bottom < height:
+            playerRectangle = playerRectangle.move([0, playerDeltaPos["y"]])
+        if pressedKeys[K_UP] and playerRectangle.top > 0:
+            playerRectangle = playerRectangle.move([0, -playerDeltaPos["y"]])
+        if pressedKeys[K_LEFT] and playerRectangle.left > 0:
+            playerRectangle = playerRectangle.move([-playerDeltaPos["x"], 0])
+        if pressedKeys[K_RIGHT] and playerRectangle.right < width:
+            playerRectangle = playerRectangle.move([playerDeltaPos["x"], 0])
 
         # Manipulate enemies
         for enemy in enemies:
@@ -130,7 +145,7 @@ if __name__ == "__main__":
             if enemy["rectangle"].right < 0:
                 enemies.pop(enemies.index(enemy))
 
-            if ballRectangle.colliderect(enemy["rectangle"]):
+            if playerRectangle.colliderect(enemy["rectangle"]):
                 running = False
 
         # Manipulate bonuses
@@ -144,7 +159,7 @@ if __name__ == "__main__":
             if bonus["rectangle"].top > height:
                 bonuses.pop(bonuses.index(bonus))
 
-            if ballRectangle.colliderect(bonus["rectangle"]):
+            if playerRectangle.colliderect(bonus["rectangle"]):
                 score += 1
                 bonuses.pop(bonuses.index(bonus))
 
